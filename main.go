@@ -1,13 +1,18 @@
 package main
 
 import (
-	"gator/internal/config"
+	"database/sql"
 	"log"
 	"os"
+
+	"github.com/jeffe89/gator/internal/config"
+	"github.com/jeffe89/gator/internal/database"
+	_ "github.com/lib/pq"
 )
 
 // Define state struct which holds pointer to config
 type state struct {
+	db  *database.Queries
 	cfg *config.Config
 }
 
@@ -19,8 +24,19 @@ func main() {
 		log.Fatalf("error reading config: %v", err)
 	}
 
+	// Open connection to database
+	db, err := sql.Open("postgres", cfg.DBURL)
+	if err != nil {
+		log.Fatalf("error connecting to database: %v", err)
+	}
+
+	// Creat queries from the SQLC-generated code
+	defer db.Close()
+	dbQueries := database.New(db)
+
 	// Store config in a new State instance
 	programState := &state{
+		db:  dbQueries,
 		cfg: &cfg,
 	}
 
@@ -29,8 +45,11 @@ func main() {
 		registeredCommands: make(map[string]func(*state, command) error),
 	}
 
-	// Register the login handler
+	// Register the handler functions
 	cmds.register("login", handlerLogin)
+	cmds.register("register", handlerRegister)
+	cmds.register("reset", handlerReset)
+	cmds.register("users", handlerUsers)
 
 	// Check if enough arguments were provided
 	if len(os.Args) < 2 {
