@@ -79,7 +79,7 @@ func handlerUsers(s *state, cmd command) error {
 	//Get all users from database
 	users, err := s.db.GetUsers(context.Background())
 	if err != nil {
-		return fmt.Errorf("error getting users: %w", err)
+		return fmt.Errorf("couldn't list users: %w", err)
 	}
 
 	// Get the current user from config
