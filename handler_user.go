@@ -98,6 +98,6 @@ func handlerUsers(s *state, cmd command) error {
 
 // Helper function to print user from database
 func printUser(user database.User) {
-	fmt.Printf(" * ID:		%v\n", user.ID)
-	fmt.Printf(" * Name:	%v\n", user.Name)
+	fmt.Printf(" * ID:        %v\n", user.ID)
+	fmt.Printf(" * Name:	  %v\n", user.Name)
 }
